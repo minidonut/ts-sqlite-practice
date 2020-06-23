@@ -1,11 +1,23 @@
 import * as sqlite3 from "sqlite3";
+import * as config from "config";
+
+// singleton object
+let db: Database = null;
 
 class Database {
   db: sqlite3.Database;
   path: string;
 
-  constructor(path: string) {
+  constructor(path = config.get("db_path") as string) {
     this.path = path;
+  }
+
+  static async getInstance() {
+    if (!db) {
+      db = new Database();
+      await db.init();
+    }
+    return db;
   }
 
   async init() {
