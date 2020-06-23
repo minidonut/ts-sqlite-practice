@@ -9,3 +9,5 @@ dist/**/*
 
 # Ignore Desktop Service Store
 .DS_Store
+
+*.db
