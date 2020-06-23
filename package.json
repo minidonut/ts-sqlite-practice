@@ -12,7 +12,6 @@
   },
   "scripts": {
     "start": "ts-node src/index.ts",
-    "build": "tsc",
     "test": "NODE_ENV=test ts-node ./node_modules/.bin/jest",
     "lint": "eslint . --ext .js,.ts"
   },
