@@ -1,6 +1,5 @@
 import Database from "./db";
 
-const DB_PATH = "./data/database.db";
 
 const queries = [
   "CREATE TABLE packages (id INTEGER PRIMARY KEY AUTOINCREMENT, name CHAR(50))", // create table
@@ -10,12 +9,11 @@ const queries = [
 ];
 
 async function main() {
-  const db = new Database(DB_PATH);
-  await db.init();
   /* const result = await db.run(queries[1]); */
+  const db = await Database.getInstance();
+  const tables = await db.tables;
+  console.log(tables);
 
-  const result = await db.all(queries[1]);
-  console.log(result);
   db.close();
 }
 
