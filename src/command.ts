@@ -24,9 +24,13 @@ const dump = async () => {
 };
 
 const restore = async () => {
-  fs.unlinkSync(dbPath);
+  try {
+    fs.unlinkSync(dbPath);
+  } catch (_) {
+    /* do nothing */
+  }
   const db = await Database.getInstance();
-  const tables = await db.tables;
+  const tables = fs.readdirSync("./data").filter(x => /\.json/.test(x)).map(x => x.slice(0, x.length - 5));
   const SQLs = fs.readFileSync(schemaPath).toString().split("\n");
 
   // create table
@@ -76,7 +80,7 @@ const bulkInsertQuery = (records: any[], tableName: string) => {
       name: "yes",
     });
     if (yes) {
-      dump();
+      await dump();
     }
   } else {
     const tables = fs.readdirSync("./data").filter(x => /\.json/.test(x));
@@ -86,7 +90,7 @@ const bulkInsertQuery = (records: any[], tableName: string) => {
       name: "yes",
     });
     if (yes) {
-      restore();
+      await restore();
     }
   }
 })();
