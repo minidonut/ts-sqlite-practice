@@ -1,10 +1,10 @@
 import Database from "./db";
 import * as fs from "fs";
 import * as config from "config";
+import * as prompts from "prompts";
 const dbPath: string = config.get("db_path");
 const schemaPath: string = config.get("db_schema_path");
 
-const cmd = process.argv[2];
 
 const getMigrationCodes = async (db: Database, table: string) => {
   const { sql } = await db.get(`SELECT sql FROM sqlite_master WHERE name='${table}'`);
@@ -55,5 +55,38 @@ const bulkInsertQuery = (records: any[], tableName: string) => {
   return ["BEGIN"].concat(SQLs).concat(["END"]);
 };
 
-dump();
-restore();
+// main
+(async () => {
+  const { command } = await prompts({
+    name: "command",
+    type: "select",
+    message: "what to do?",
+    choices: [
+      { title: "dump", value: "dump" },
+      { title: "restore", value: "restore" },
+    ],
+  });
+  if (!command) { console.log("canceled"); process.exit(0); }
+  if (command === "dump") {
+    const db = await Database.getInstance();
+    const tables = await db.tables;
+    const { yes } = await prompts({
+      message: `dump [${tables.join(", ")}] to JSON?`,
+      type: "confirm",
+      name: "yes",
+    });
+    if (yes) {
+      dump();
+    }
+  } else {
+    const tables = fs.readdirSync("./data").filter(x => /\.json/.test(x));
+    const { yes } = await prompts({
+      message: `restore from [${tables.join(", ")}]?`,
+      type: "confirm",
+      name: "yes",
+    });
+    if (yes) {
+      restore();
+    }
+  }
+})();
