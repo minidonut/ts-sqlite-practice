@@ -24,20 +24,22 @@ const dump = async () => {
 };
 
 const restore = async () => {
-  /* fs.unlinkSync(dbPath); */
+  fs.unlinkSync(dbPath);
   const db = await Database.getInstance();
   const tables = await db.tables;
-  /* const SQLs = fs.readFileSync(schemaPath).toString().split("\n"); */
+  const SQLs = fs.readFileSync(schemaPath).toString().split("\n");
 
   // create table
-  /* for (const sql of SQLs) { */
-  /* await db.run(sql); */
-  /* } */
+  for (const sql of SQLs) {
+    await db.run(sql);
+  }
 
   for (const table of tables) {
     const data = JSON.parse(fs.readFileSync(`./data/${table}.json`).toString());
-    const query = bulkInsertQuery(data, table);
-    console.log(query);
+    const queries = bulkInsertQuery(data, table);
+    for (const query of queries) {
+      await db.run(query);
+    }
   }
 };
 
@@ -47,12 +49,11 @@ const bulkInsertQuery = (records: any[], tableName: string) => {
   const SQLs = records.map((record) => {
     const keys = Object.keys(record).join(", ");
     const values = Object.values(record).map(x => x === null ? "null" : `"${x}"`).join(", ");
-    return `INSERT INTO ${tableName} (${keys}) VALUES(${values});`;
+    return `INSERT INTO ${tableName} (${keys}) VALUES(${values})`;
   });
 
-  return ["BEGIN;"].concat(SQLs).concat(["END;"]).join("\n");
+  return ["BEGIN"].concat(SQLs).concat(["END"]);
 };
 
-/* dump(); */
-
+dump();
 restore();
