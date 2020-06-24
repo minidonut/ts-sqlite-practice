@@ -1,1 +1,1 @@
-# Sindresorhus
+# ts-sqlite-practice

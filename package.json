@@ -1,11 +1,11 @@
 {
-  "name": "sindresorhus",
+  "name": "ts-sqlite-practice",
   "version": "1.0.0",
   "description": "",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "repository": "minidonut/sindresorhus",
+  "repository": "minidonut/ts-sqlite-practice",
   "author": {
     "name": "Karl Saehun Chung",
     "email": "saehun.dev@gmail.com"
